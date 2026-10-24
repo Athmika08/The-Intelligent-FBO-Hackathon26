@@ -1,217 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LAXY Intelligent FBO – Super Bowl LXI Operations (LAX)</title>
-  <meta name="description" content="AI-powered business aviation operations center for a fictional FBO at LAX during Super Bowl LXI week, Feb 10–16, 2027. Synthetic data for demonstration; planning support only.">
-  <meta name="theme-color" content="#2b1065">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232b1065'/%3E%3Cpath d='M6 19l9-2.500L11 8h2.500l6.500 7 5-1.400a2 2 0 011.100 3.800l-5 1.400-6.500 7H12l4-7.600-9 2.500z' fill='%23c4a6ff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/styles.css">
+  <meta name="theme-color" content="#f7f9fc">
+  <meta name="description" content="ArrivalIQ: Super Bowl LXI aircraft arrival demand scenarios at a fictional LAX FBO.">
+  <title>ArrivalIQ | Super Bowl LXI FBO Planning</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
-<body data-scen="high" class="intro-on">
-  <a class="skip" href="#main">Skip to content</a>
-
-  <!-- ===================== LANDING ANIMATION ===================== -->
-  <div id="intro" class="intro" role="dialog" aria-modal="true" aria-label="LAXY Intelligent FBO welcome animation">
-    <canvas id="intro-canvas" aria-hidden="true"></canvas>
-    <div class="intro-ui">
-      <div class="intro-top">
-        <div class="intro-brand">
-          <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#2b1065"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#lg1)"/><path d="M9 29l13-3.600L16 12h3.600l9.400 10.500 7-2a2.800 2.800 0 011.600 5.400l-7 2-9.400 10.500H18l5.800-11z" fill="#fff"/><path d="M8 40h32" stroke="#c4a6ff" stroke-width="2.400" stroke-dasharray="5 4" stroke-linecap="round"/></svg>
-          <div>
-            <div class="intro-eyebrow">Super Bowl LXI &middot; Los Angeles International</div>
-            <h1>LAXY <span>Intelligent FBO</span></h1>
-          </div>
-        </div>
-        <button type="button" class="intro-skip" id="intro-skip">Skip Animation &rsaquo;</button>
-      </div>
-      <div class="intro-bottom">
-        <div class="intro-status"><span id="intro-msg" aria-live="polite">Approaching LAX&hellip;</span><b id="intro-pct">0%</b></div>
-        <div class="intro-bar" role="progressbar" aria-label="Loading operations dashboard" aria-valuemin="0" aria-valuemax="100"><span id="intro-fill"></span></div>
-        <button type="button" class="intro-enter" id="intro-enter">Enter Operations Dashboard</button>
-        <p class="intro-note">Synthetic data &middot; planning support only &middot; air traffic control and airport personnel remain in command</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===================== NAVIGATION ===================== -->
-  <header class="appbar" id="appbar">
-    <div class="ab-top">
-      <a class="brand" href="#dashboard" aria-label="LAXY Intelligent FBO - Dashboard">
-        <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#3b1a85"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#lg2)"/><path d="M9 29l13-3.600L16 12h3.600l9.400 10.500 7-2a2.800 2.800 0 011.600 5.400l-7 2-9.400 10.500H18l5.800-11z" fill="#fff"/><path d="M8 40h32" stroke="#d8c9fb" stroke-width="2.400" stroke-dasharray="5 4" stroke-linecap="round"/></svg>
-        <div><h1>LAXY <span>Intelligent FBO</span></h1><p>Super Bowl LXI Operations</p></div>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="ArrivalIQ home">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 28 28" fill="none"><path d="m24 5-7.9 18-3.4-7.7L5 11.9 24 5Z" stroke="currentColor" stroke-width="1.85" stroke-linejoin="round"/><path d="M12.7 15.3 24 5" stroke="currentColor" stroke-width="1.85" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-word">Arrival<span>IQ</span></span>
       </a>
-      <div class="ab-spacer"></div>
-      <div class="ab-meta">
-        <div class="ab-scen"><span class="cb-label" id="scen-label">Demand level</span>
-          <div class="seg seg-sm scen-seg in-bar" role="radiogroup" aria-labelledby="scen-label">
-            <button type="button" role="radio" data-s="low"><i></i>Low</button><button type="button" role="radio" data-s="medium"><i></i>Medium</button><button type="button" role="radio" data-s="high"><i></i>High</button>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#dashboard">Dashboard</a>
+        <a class="nav-link" href="#operations">Operations</a>
+        <a class="nav-link" href="#methodology">Methodology</a>
+      </nav>
+      <div class="header-right"><span class="header-indicator"><span></span> Planning prototype</span><a class="header-button" href="forecast_2027.csv" download>Download data <span aria-hidden="true">&#8599;</span></a></div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="Introduction">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-line"></span> SUPER BOWL LXI / LOS ANGELES 2027</div>
+          <h1>More clarity.<br><span>Before the rush.</span></h1>
+          <p>Aircraft arrival demand forecasting and ground-service planning for a fictional FBO at Los Angeles International Airport.</p>
+          <div class="hero-chips"><span class="chip"><span class="icon-dot"></span> KLAX / LAX</span><span class="chip">Feb 10 - 16, 2027</span><span class="chip">7-day forecast</span></div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="radar radar-1"></div><div class="radar radar-2"></div><div class="radar radar-3"></div>
+          <div class="visual-path path-one"></div><div class="visual-path path-two"></div>
+          <span class="radar-point r1"></span><span class="radar-point r2"></span><span class="radar-point r3"></span>
+          <svg class="hero-plane" width="166" height="166" viewBox="0 0 166 166" fill="none"><path d="M83 13c-4 0-7 7-8 13l-5 42-42 22-5-12c-2-6-8-8-11-8l3 28 49 29-4 20-13 7 1 7 35-8 35 8 1-7-13-7-4-20 49-29 3-28c-3 0-9 2-11 8l-5 12-42-22-5-42c-1-6-4-13-8-13Z" fill="#f8fbff" stroke="#9db9e5" stroke-width="2"/><path d="m83 23 0 111" stroke="#d3e0f4" stroke-width="2"/></svg>
+          <div class="visual-label"><span class="visual-label-dot"></span> ARRIVAL DEMAND <strong>FORECAST</strong></div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="content-section">
+        <div class="section-heading section-heading-flex">
+          <div><div class="overline">01 / DEMAND OVERVIEW</div><h2>Arrival forecast dashboard</h2><p>Explore how expected traffic changes with each planning scenario.</p></div>
+          <div class="scenario-control" role="group" aria-label="Demand scenario">
+            <button type="button" data-scenario="low" aria-pressed="false">Low</button>
+            <button type="button" data-scenario="medium" aria-pressed="true" class="selected">Medium</button>
+            <button type="button" data-scenario="high" aria-pressed="false">High</button>
           </div>
         </div>
-        <div class="ab-date" id="ab-date" aria-live="polite"></div>
-        <button type="button" class="bell" id="bell" aria-label="Open Alerts Center" aria-haspopup="dialog"><span id="bell-ico"></span><span class="bell-badge none" id="bell-badge">0</span></button>
-        <button type="button" class="menu-btn" id="menu-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="tabs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      </div>
-    </div>
-    <nav class="tabs" id="tabs" aria-label="Operations sections"></nav>
-    <div class="updbar" id="updbar" aria-hidden="true"></div>
-  </header>
 
-  <div class="modebar" role="note">
-    <div class="mb-inner">
-      <span class="tag-syn">SYNTHETIC DATA</span>
-      <span>Estimates for demonstration. Planning support only &mdash; ATC, airport authorities and certified personnel decide all runway and aircraft-movement actions.</span>
-      <span class="model-meta" id="model-meta">Loading model&hellip;</span>
-    </div>
-  </div>
+        <div id="loadError" class="error-panel" hidden><strong>Unable to load forecast data.</strong><p>For local viewing, serve this folder with <code>python -m http.server 8000</code>, then open <code>http://localhost:8000</code>. GitHub Pages will load the data automatically.</p></div>
+        <div id="dashboardContent">
+          <div class="kpi-grid">
+            <article class="kpi-card"><div class="kpi-top"><span>Forecast arrivals</span><span class="kpi-icon" aria-hidden="true">&#9992;</span></div><div class="kpi-value" id="kpiTotal">--</div><div class="kpi-footer"><span class="kpi-tag" id="kpiIncrease">--</span> vs ordinary week</div></article>
+            <article class="kpi-card"><div class="kpi-top"><span>Busiest day</span><span class="kpi-icon" aria-hidden="true">&#9783;</span></div><div class="kpi-value" id="kpiPeakDay">--</div><div class="kpi-footer" id="kpiPeakDayDetail">--</div></article>
+            <article class="kpi-card"><div class="kpi-top"><span>Peak 2-hour demand</span><span class="kpi-icon" aria-hidden="true">&#9719;</span></div><div class="kpi-value"><span id="kpiPeakCount">--</span><span class="kpi-unit">aircraft</span></div><div class="kpi-footer" id="kpiPeakDetail">--</div></article>
+            <article class="kpi-card"><div class="kpi-top"><span>Service coverage</span><span class="kpi-icon" aria-hidden="true">&#10003;</span></div><div class="kpi-value" id="kpiCoverage">--</div><div class="kpi-footer"><span class="positive-text" id="kpiCoverageDiff">--</span> with preparation</div></article>
+          </div>
 
-  <div class="controlbar" id="controlbar">
-    <div class="cb-group cb-dates">
-      <span class="cb-label" id="date-label">Planning date &middot; Super Bowl LXI week</span>
-      <div class="date-pills" id="date-pills" role="radiogroup" aria-labelledby="date-label"></div>
-    </div>
-    <div class="cb-group cb-scen-m">
-      <span class="cb-label">Demand level</span>
-      <div class="seg scen-seg" role="radiogroup" aria-label="Demand level">
-        <button type="button" role="radio" data-s="low"><i></i>Low</button><button type="button" role="radio" data-s="medium"><i></i>Medium</button><button type="button" role="radio" data-s="high"><i></i>High</button>
-      </div>
-    </div>
-    <div class="cb-group cb-time">
-      <span class="cb-label" id="time-label">Operations clock (simulated)</span>
-      <div class="opstime">
-        <button type="button" class="play" id="btn-play" aria-label="Play operations clock" title="Play / pause the simulated operations clock"></button>
-        <input type="range" id="ops-slider" min="0" max="23" step="1" aria-labelledby="time-label"><output id="ops-out" for="ops-slider"></output>
-      </div>
-    </div>
-    <div class="cb-group cb-actions">
-      <button type="button" class="btn btn-primary" id="btn-refresh" title="Request updated predictions from the forecasting backend (mock)">
-        <span id="refresh-ico"></span><span class="lbl">Refresh Forecast</span>
-      </button>
-      <div class="menu-wrap">
-        <button type="button" class="btn btn-light" id="btn-export" aria-haspopup="true" aria-expanded="false"><span id="export-ico"></span><span>Export</span></button>
-        <div class="menu" id="export-menu" hidden>
-          <button type="button" data-x="csv"><b>Daily schedule (CSV)</b><small>Selected date &amp; scenario, anonymized</small></button>
-          <button type="button" data-x="plan"><b>Preparation plan (Markdown)</b><small>Staffing, fuel, parking, alerts, approvals</small></button>
-          <button type="button" data-x="print"><b>Print / save as PDF</b><small>Current page</small></button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="shell">
-    <main id="main" tabindex="-1">
-
-      <!-- 1 · DASHBOARD -->
-      <section class="page" id="page-dashboard" data-page="dashboard" hidden>
-        <div class="panel-section" id="overview">
-          <div id="body-overview"></div>
-          <span id="meta-overview" hidden></span>
-        </div>
-        <div class="panel-section" id="alerts">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="bell"></span>Alerts Center</h2><p>Severity, time, affected resource and the recommended human action.</p></div><div class="sec-meta" id="meta-alerts"></div></header>
-          <div id="body-alerts"></div>
-        </div>
-        <div class="panel-section" id="safety">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="shield"></span>Responsible AI &amp; Safety</h2><p>What this system will and will not do.</p></div><div class="sec-meta" id="meta-safety"></div></header>
-          <div id="body-safety"></div>
+          <div class="dashboard-grid">
+            <article class="panel chart-panel">
+              <div class="panel-heading"><div><div class="card-label">WEEKLY ACTIVITY</div><h3>Daily arrivals</h3><p>Ordinary-week baseline compared to event-week forecast</p></div><div class="tiny-pill">7 days</div></div>
+              <div class="chart-legend"><span><i class="legend-swatch baseline"></i> Ordinary baseline</span><span><i class="legend-swatch predicted"></i> <span id="scenarioLegend">Medium</span> demand</span></div>
+              <div class="daily-chart-wrap"><svg id="dailyChart" viewBox="0 0 720 268" role="img" aria-label="Daily baseline versus forecast bar chart"></svg></div>
+              <div class="chart-footnote">Forecast numbers are scenario estimates, not scheduled or confirmed flights.</div>
+            </article>
+            <article class="panel insight-panel">
+              <div class="panel-heading"><div><div class="card-label">PLANNING SIGNAL</div><h3>When to prepare</h3><p>Highest-demand two-hour window</p></div><span class="pulse-badge"><span></span> Peak window</span></div>
+              <div class="peak-time-wrap"><div class="peak-date" id="peakDateText">--</div><div class="peak-time" id="peakTimeText">--</div><div class="peak-time-caption"><span id="peakWindowCount">--</span> expected arrivals in two hours</div></div>
+              <div class="capacity-comparison"><div class="capacity-label"><span>Current capacity</span><strong id="regularCapacityText">4 aircraft</strong></div><div class="capacity-track"><span class="capacity-progress baseline-bar" id="capacityBeforeBar"></span></div><div class="capacity-label"><span>With recommended staffing</span><strong id="plannedCapacityText">--</strong></div><div class="capacity-track"><span class="capacity-progress after-bar" id="capacityAfterBar"></span></div></div>
+              <div class="recommendation-strip"><div class="recommendation-icon">+</div><div><div class="recommendation-label">RECOMMENDED ACTION</div><p id="recommendationText">--</p></div></div>
+            </article>
+          </div>
         </div>
       </section>
 
-      <!-- 2 · ARRIVAL FORECAST -->
-      <section class="page" id="page-forecast" data-page="forecast" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="chart"></span>Arrival Forecast</h2><p>Seven-day private &amp; business aviation forecast for Feb 10–16, 2027, against an ordinary week.</p></div><div class="sec-meta" id="meta-forecast"></div></div>
-        <div class="panel-section" id="forecast"><div id="body-forecast"></div></div>
-        <div class="panel-section" id="scenarios">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="layers"></span>Low, Medium &amp; High Demand Scenarios</h2><p>See how each demand level changes the whole plan.</p></div><div class="sec-meta" id="meta-scenarios"></div></header>
-          <div id="body-scenarios"></div>
+      <section id="operations" class="content-section">
+        <div class="section-heading"><div class="overline">02 / OPERATIONS</div><h2>A closer look at arrival pressure</h2><p>Select a day to see where existing ground-service coverage may be strained.</p></div>
+        <div class="operations-grid">
+          <article class="panel hourly-panel">
+            <div class="panel-heading"><div><div class="card-label">HOURLY PROFILE</div><h3>Arrivals by 2-hour interval</h3><p>Click a day below to explore its demand profile</p></div></div>
+            <div class="date-tabs" id="dateTabs" role="group" aria-label="Select date"></div>
+            <div class="hourly-title-row"><strong id="selectedDateTitle">--</strong><span><span class="small-dot blue"></span> Within capacity &nbsp; <span class="small-dot amber"></span> Additional teams needed</span></div>
+            <div id="hourlyChart" class="hourly-chart" aria-label="Arrivals by two-hour period"></div>
+          </article>
+          <article class="panel capacity-panel">
+            <div class="panel-heading"><div><div class="card-label">OPERATIONAL IMPACT</div><h3>Preparation makes a difference</h3><p>Estimated arrival coverage across all 84 planning windows</p></div></div>
+            <div class="coverage-number"><span id="coverageAfterNumber">--</span><small>after preparation</small></div>
+            <div class="coverage-rows"><div class="coverage-row"><span>Before</span><strong id="coverageBeforeLabel">--</strong></div><div class="coverage-track"><div id="coverageBeforeBar"></div></div><div class="coverage-row"><span>After</span><strong id="coverageAfterLabel">--</strong></div><div class="coverage-track"><div class="green-fill" id="coverageAfterBar"></div></div></div>
+            <div class="small-stats"><div><strong id="shortageBefore">--</strong><span>Intervals with shortages, before</span></div><div><strong id="shortageAfter">--</strong><span>Intervals with shortages, after</span></div></div>
+            <p class="model-note">Coverage is modeled from fictional service-team capacity, not runway capacity or ATC clearance.</p>
+          </article>
         </div>
       </section>
 
-      <!-- 3 · LIVE SCHEDULE -->
-      <section class="page" id="page-schedule" data-page="schedule" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="clock"></span>Live Schedule</h2><p>Hourly arrival blocks with parking, fuel windows, ground-handler assignments, delays and recommended spacing. Click any aircraft for details.</p></div><div class="sec-meta" id="meta-schedule"></div></div>
-        <div class="panel-section" id="schedule"><div id="body-schedule"></div></div>
-      </section>
-
-      <!-- 4 · PARKING & RAMP -->
-      <section class="page" id="page-parking" data-page="parking" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="park"></span>Parking &amp; Ramp</h2><p>Color-coded ramp map and aircraft list. Final aircraft placement always needs human approval.</p></div><div class="sec-meta" id="meta-parking"></div></div>
-        <div class="panel-section" id="parking"><div id="body-parking"></div></div>
-      </section>
-
-      <!-- 5 · RUNWAY OPERATIONS -->
-      <section class="page" id="page-runway" data-page="runway" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="runway"></span>Runway Operations</h2><p>Advisory planning data only: expected arrival periods, availability, conflicts and recommended windows.</p></div><div class="sec-meta" id="meta-runway"></div></div>
-        <div class="panel-section" id="runway"><div id="body-runway"></div></div>
-      </section>
-
-      <!-- 6 · FUEL PLANNING -->
-      <section class="page" id="page-fuel" data-page="fuel" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="fuel"></span>Fuel Planning</h2><p>Demand, inventory, reserve and when to replenish.</p></div><div class="sec-meta" id="meta-fuel"></div></div>
-        <div class="panel-section" id="fuel"><div id="body-fuel"></div></div>
-      </section>
-
-      <!-- 7 · STAFFING -->
-      <section class="page" id="page-staffing" data-page="staffing" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="crew"></span>Staffing</h2><p>Recommended staff by hour versus who is on the roster.</p></div><div class="sec-meta" id="meta-staffing"></div></div>
-        <div class="panel-section" id="staffing"><div id="body-staffing"></div></div>
-      </section>
-
-      <!-- 8 · AI OPERATIONS ASSISTANT -->
-      <section class="page" id="page-assistant" data-page="assistant" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="spark"></span>AI Operations Assistant</h2><p>Ask questions in plain language. Answers use the forecast and schedule data and are planning recommendations only.</p></div><div class="sec-meta" id="meta-chat"></div></div>
-        <div class="panel-section" id="chat"><div id="body-chat"></div></div>
-        <div class="panel-section" id="scheduler">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="clock"></span>Scheduling recommendations</h2><p>Advisory plan to spread arrivals, services, parking and fuel work.</p></div><div class="sec-meta" id="meta-assistant"></div></header>
-          <div id="body-assistant"></div>
+      <section id="methodology" class="content-section methodology-section">
+        <div class="section-heading"><div class="overline">03 / HOW IT WORKS</div><h2>Built on transparent assumptions</h2><p>Our forecasting prototype makes its inputs, limitations, and human responsibilities explicit.</p></div>
+        <div class="method-grid">
+          <div class="method-card"><div class="method-no">01</div><h3>Baseline activity</h3><p>Four weeks of synthetic arrivals are summarized into average counts by weekday and two-hour interval.</p><div class="method-tag">baseline_analysis.py &rarr; baseline.csv</div></div>
+          <div class="method-card"><div class="method-no">02</div><h3>Event adjustments</h3><p>Historical Super Bowl aviation reports inform assumed demand multipliers for the seven-day event window.</p><div class="method-tag">superbowl_impact.csv</div></div>
+          <div class="method-card"><div class="method-no">03</div><h3>Scenario planning</h3><p>Multipliers are applied to baseline counts. Demand is compared against simulated ground-service capacity.</p><div class="method-tag">forecast.py &rarr; dashboard_data.json</div></div>
         </div>
-      </section>
-
-      <!-- 9 · REPORTS -->
-      <section class="page" id="page-reports" data-page="reports" hidden>
-        <div class="page-head"><div><h2><span class="ph-ico" data-ico="file"></span>Reports</h2><p>Exports, forecast accuracy, measurable impact and the Responsible AI statement.</p></div><div class="sec-meta" id="meta-reports"></div></div>
-        <div class="panel-section" id="exports"><div id="body-reports"></div></div>
-        <div class="panel-section" id="impact">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="chart"></span>Forecast Accuracy &amp; Impact</h2><p>Measured value of the tool, with synthetic data clearly labeled.</p></div><div class="sec-meta" id="meta-impact"></div></header>
-          <div id="body-impact"></div>
+        <div class="detail-grid">
+          <article class="detail-card"><div class="card-label">ASSUMPTIONS</div><h3>Modeled FBO resources</h3><div class="detail-row"><span>Baseline average</span><strong id="assumptionDaily">--</strong></div><div class="detail-row"><span>Regular ground-service teams</span><strong id="assumptionTeams">--</strong></div><div class="detail-row"><span>Capacity per team / 2 hours</span><strong id="assumptionCapacity">--</strong></div><div class="detail-row"><span>Maximum additional teams</span><strong id="assumptionExtra">--</strong></div><div class="detail-row"><span>Short / long stay</span><strong id="assumptionParking">--</strong></div><div class="detail-row"><span>Fuel purchase assumption</span><strong id="assumptionFuel">--</strong></div><p class="model-note">Parking and fuel assumptions are documented but are not inputs to the arrivals forecast.</p></article>
+          <article class="detail-card"><div class="card-label">SAFETY & UNCERTAINTY</div><h3>Humans remain in command</h3><p><strong>Not a live traffic feed.</strong> Arrivals and event-day multipliers are synthetic assumptions; the actual 2027 result is unknown.</p><p>Airport-wide historical ratios do not directly measure arrivals at a single FBO. Low/Medium/High are planning cases, not confidence intervals.</p><p class="safety-callout">This tool must never independently authorize aircraft landings, ground movements, or changes to safety procedures.</p></article>
         </div>
-        <div class="panel-section" id="responsible">
-          <header class="sec-head"><div><h2><span class="sh-ico" data-ico="shield"></span>Privacy, Safety &amp; Human Oversight</h2><p>Responsible AI: what this system will and will not do.</p></div><div class="sec-meta" id="meta-responsible"></div></header>
-          <div id="body-responsible"></div>
-        </div>
+        <div class="footer-sources">Historical research references: <a href="https://www.ainonline.com/aviation-news/business-aviation/2024-02-13/super-bowl-draws-flocks-aircraft-numbers-down-previous" target="_blank" rel="noopener noreferrer">AIN / WINGX Super Bowl 2023-24 analysis &#8599;</a> &nbsp; | &nbsp; <a href="https://nbaa.org/aircraft-operations/airspace/regional/super-bowl-lvi/" target="_blank" rel="noopener noreferrer">NBAA 2022 peak-period guidance &#8599;</a></div>
       </section>
-
-      <footer class="foot">
-        <p><b>LAXY Intelligent FBO</b> &middot; hackathon prototype &middot; fictional operator at LAX &middot; Super Bowl LXI week. All data synthetic or backend-generated for demonstration. Planning support only; humans approve all actions; ATC and airport authorities control all aircraft movements.</p>
-      </footer>
     </main>
+    <footer class="site-footer"><div><span class="footer-brand">Arrival<span>IQ</span></span><span class="footer-divider"></span> Super Bowl LXI / 2027 planning prototype</div><span>Synthetic data. Human decisions.</span></footer>
   </div>
-
-  <div class="scrim" id="scrim"></div>
-  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" aria-hidden="true" tabindex="-1">
-    <div class="dr-head"><div><h3 id="dr-title"></h3><p id="dr-sub"></p></div><button type="button" class="dr-close" id="dr-close" aria-label="Close panel">&times;</button></div>
-    <div class="dr-body" id="dr-body"></div>
-  </aside>
-
-  <div id="toast-host" class="toast-host" aria-live="polite" role="status"></div>
-  <div id="loading" class="loading" role="status" hidden><div class="ld-box"><div class="ld-plane" aria-hidden="true"></div><p>Updating forecast&hellip;</p></div></div>
-
-  <script src="js/charts.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/forecast-data.js"></script>
-  <script src="js/model.js"></script>
-  <script src="js/sim.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/views-overview.js"></script>
-  <script src="js/views-schedule.js"></script>
-  <script src="js/views-parking.js"></script>
-  <script src="js/views-runway.js"></script>
-  <script src="js/views-ops.js"></script>
-  <script src="js/chat.js"></script>
-  <script src="js/views-resources.js"></script>
-  <script src="js/views-insight.js"></script>
-  <script src="js/intro.js"></script>
-  <script>App.boot();</script>
 </body>
 </html>
