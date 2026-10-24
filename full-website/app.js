@@ -178,3 +178,61 @@ function initializeSectionNavigation() {
 }
 
 initializeSectionNavigation();
+
+
+// Download the full 7-day forecast as CSV, directly from the dashboard JSON.
+// This avoids broken links when forecast_2027.csv was not uploaded to GitHub Pages.
+function forecastCsvContent(data) {
+  const columns = [
+    'scenario', 'date', 'day_of_week', 'start_hour', 'end_hour',
+    'time_label', 'baseline_arrivals', 'predicted_arrivals',
+    'capacity_before', 'recommended_extra_teams', 'capacity_after',
+    'uncovered_before', 'uncovered_after'
+  ];
+  const quote = value => {
+    const s = String(value == null ? '' : value);
+    return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [columns.join(',')];
+  for (const scenarioName of ['low', 'medium', 'high']) {
+    const scenario = data.scenarios[scenarioName];
+    if (!scenario || !Array.isArray(scenario.intervals)) {
+      throw new Error(`Missing ${scenarioName} forecast data`);
+    }
+    for (const interval of scenario.intervals) {
+      lines.push(columns.map(key => quote(key === 'scenario' ? scenarioName : interval[key])).join(','));
+    }
+  }
+  return '\uFEFF' + lines.join('\r\n') + '\r\n';
+}
+
+function initializeCsvDownload() {
+  const button = document.querySelector('.header-right .header-button');
+  if (!button) return;
+  button.addEventListener('click', async event => {
+    event.preventDefault();
+    try {
+      let data = state.data;
+      if (!data) {
+        const result = await fetch('dashboard_data.json', { cache: 'no-cache' });
+        if (!result.ok) throw new Error(`Forecast JSON unavailable: HTTP ${result.status}`);
+        data = await result.json();
+      }
+      const csv = forecastCsvContent(data);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      const objectUrl = URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = objectUrl;
+      downloadLink.download = 'forecast_2027.csv';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch (error) {
+      console.error('ArrivalIQ CSV download failed', error);
+      window.alert('The forecast is not available yet. Please reload the page and try again.');
+    }
+  });
+}
+
+initializeCsvDownload();
