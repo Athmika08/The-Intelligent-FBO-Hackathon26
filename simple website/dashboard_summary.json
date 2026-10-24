@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "airport": "Los Angeles International Airport (LAX / KLAX)",
+    "forecast_start": "2027-02-10",
+    "forecast_end": "2027-02-16",
+    "note": "Synthetic, fictional FBO scenario. Not real LAX arrival counts."
+  },
+  "baseline_weekly": 169.75,
+  "scenarios": {
+    "low": {
+      "weekly_arrivals": 197,
+      "peak_date": "2027-02-12",
+      "peak_day_arrivals": 38,
+      "extra_teams": 1,
+      "peak_window": {
+        "date": "2027-02-12",
+        "label": "18:00-20:00",
+        "arrivals": 8,
+        "capacity_before": 4,
+        "capacity_after": 8
+      },
+      "coverage_before_pct": 90.9,
+      "coverage_after_pct": 100.0,
+      "daily": [
+        {
+          "date": "2027-02-10",
+          "baseline": 32.25,
+          "forecast": 34
+        },
+        {
+          "date": "2027-02-11",
+          "baseline": 28.0,
+          "forecast": 32
+        },
+        {
+          "date": "2027-02-12",
+          "baseline": 30.0,
+          "forecast": 38
+        },
+        {
+          "date": "2027-02-13",
+          "baseline": 19.5,
+          "forecast": 29
+        },
+        {
+          "date": "2027-02-14",
+          "baseline": 15.25,
+          "forecast": 19
+        },
+        {
+          "date": "2027-02-15",
+          "baseline": 21.75,
+          "forecast": 22
+        },
+        {
+          "date": "2027-02-16",
+          "baseline": 23.0,
+          "forecast": 23
+        }
+      ]
+    },
+    "medium": {
+      "weekly_arrivals": 226,
+      "peak_date": "2027-02-12",
+      "peak_day_arrivals": 47,
+      "extra_teams": 2,
+      "peak_window": {
+        "date": "2027-02-12",
+        "label": "18:00-20:00",
+        "arrivals": 10,
+        "capacity_before": 4,
+        "capacity_after": 12
+      },
+      "coverage_before_pct": 85.4,
+      "coverage_after_pct": 100.0,
+      "daily": [
+        {
+          "date": "2027-02-10",
+          "baseline": 32.25,
+          "forecast": 35
+        },
+        {
+          "date": "2027-02-11",
+          "baseline": 28.0,
+          "forecast": 35
+        },
+        {
+          "date": "2027-02-12",
+          "baseline": 30.0,
+          "forecast": 47
+        },
+        {
+          "date": "2027-02-13",
+          "baseline": 19.5,
+          "forecast": 39
+        },
+        {
+          "date": "2027-02-14",
+          "baseline": 15.25,
+          "forecast": 24
+        },
+        {
+          "date": "2027-02-15",
+          "baseline": 21.75,
+          "forecast": 23
+        },
+        {
+          "date": "2027-02-16",
+          "baseline": 23.0,
+          "forecast": 23
+        }
+      ]
+    },
+    "high": {
+      "weekly_arrivals": 254,
+      "peak_date": "2027-02-12",
+      "peak_day_arrivals": 55,
+      "extra_teams": 2,
+      "peak_window": {
+        "date": "2027-02-12",
+        "label": "18:00-20:00",
+        "arrivals": 12,
+        "capacity_before": 4,
+        "capacity_after": 12
+      },
+      "coverage_before_pct": 79.1,
+      "coverage_after_pct": 100.0,
+      "daily": [
+        {
+          "date": "2027-02-10",
+          "baseline": 32.25,
+          "forecast": 37
+        },
+        {
+          "date": "2027-02-11",
+          "baseline": 28.0,
+          "forecast": 39
+        },
+        {
+          "date": "2027-02-12",
+          "baseline": 30.0,
+          "forecast": 55
+        },
+        {
+          "date": "2027-02-13",
+          "baseline": 19.5,
+          "forecast": 49
+        },
+        {
+          "date": "2027-02-14",
+          "baseline": 15.25,
+          "forecast": 28
+        },
+        {
+          "date": "2027-02-15",
+          "baseline": 21.75,
+          "forecast": 23
+        },
+        {
+          "date": "2027-02-16",
+          "baseline": 23.0,
+          "forecast": 23
+        }
+      ]
+    }
+  }
+}

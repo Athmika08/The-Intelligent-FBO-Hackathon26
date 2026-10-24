@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="ArrivalIQ - seven-day LAX FBO arrival forecast scenarios, using synthetic team data.">
+  <title>ArrivalIQ · LAX Arrival Forecast</title>
+  <style>
+    :root { color-scheme:light; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; --text:#151515; --secondary:#666; --muted:#9a9a9a; --border:#e4e4e7; --blue:#1388fd; --purple:#9349f7; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#fafafa; color:var(--text); -webkit-font-smoothing:antialiased; }
+    main { max-width:1224px; margin:32px auto; padding:29px 24px 19px; border:2px solid #e1e1e1; background:#fff; border-radius:37px; }
+    .heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    h1 { margin:0 0 8px; font-size:36px; font-weight:720; letter-spacing:-1.5px; line-height:1.15; }
+    .subtitle { margin:0; font-size:25px; color:#626262; line-height:1.4; }
+    .badge { align-self:center; border-radius:999px; background:#f2f2f2; padding:7px 13px; font-size:19px; line-height:1.15; white-space:nowrap; }
+    .scenario-title { margin:28px 0 13px; font-size:25px; font-weight:500; color:#626262; }
+    .segmented { display:grid; grid-template-columns:repeat(3,1fr); gap:0; align-items:center; margin:0 0 49px; }
+    .segmented button { display:block; appearance:none; border:0; background:transparent; color:#989898; border-radius:999px; font:inherit; font-size:25px; padding:13px 9px; cursor:pointer; transition: background .18s ease,color .18s ease; }
+    .segmented button.selected { background:#f2f2f2; color:#111; }
+    .segmented button:focus-visible { outline:3px solid #a9d5ff; outline-offset:2px; }
+    .segmented button:hover:not(.selected) { color:#555; }
+    .kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; padding:0 22px; margin-bottom:55px; }
+    .kpi-label { display:block; color:#626262; font-size:24px; margin-bottom:12px; }
+    .kpi-number { display:block; font-size:39px; font-weight:680; letter-spacing:-1px; line-height:1.24; font-variant-numeric:tabular-nums; }
+    .kpi-detail { display:block; color:#666; font-size:19px; margin-top:6px; }
+    h2 { font-size:27px; margin:0 0 29px; letter-spacing:-.35px; }
+    .chart-shell { border:2px solid #e5e5e5; border-radius:30px; padding:18px 25px 10px; position:relative; }
+    .chart-stage { position:relative; width:100%; }
+    svg { width:100%; height:auto; aspect-ratio:1100 / 415; display:block; overflow:visible; }
+    .chart-grid { stroke:#d9d9d9; stroke-dasharray:5 5; stroke-width:1.4; }
+    .chart-tick { fill:#696969; font-size:21px; }
+    .chart-date { fill:#696969; font-size:21px; }
+    .legend { display:flex; justify-content:center; gap:58px; align-items:center; flex-wrap:wrap; color:#666; font-size:22px; margin:17px 0 3px; }
+    .legend span { display:inline-flex; gap:11px; align-items:center; }
+    .swatch { display:inline-block; width:18px; height:18px; border-radius:50%; }
+    .swatch.blue { background:var(--blue); } .swatch.purple { background:var(--purple); }
+    .tooltip { position:absolute; z-index:2; background:white; border:1px solid #dedede; padding:14px 16px; border-radius:13px; box-shadow:0 8px 28px #0002; pointer-events:none; transform:translate(-50%,-100%); font-size:17px; min-width:226px; opacity:0; transition:opacity .12s; line-height:1.5; }
+    .tooltip.visible { opacity:1; }
+    .tooltip .tip-heading { font-weight:600; font-size:15px; margin-bottom:8px; }
+    .tooltip .tip-row { display:flex; justify-content:space-between; gap:15px; color:#606060; white-space:nowrap; }
+    .tooltip b { color:#111; }
+    .tooltip .tip-dot { display:inline-block; height:10px; width:10px; border-radius:50%; margin-right:7px; }
+    .chart-hit { cursor:crosshair; fill:transparent; }
+    .footnote { margin:14px 2px 0; color:#828282; font-size:12px; line-height:1.5; }
+    @media(max-width:900px) {
+      main { margin:16px; padding:25px 18px 17px; border-radius:25px; }
+      h1 { font-size:32px; } .subtitle,.scenario-title { font-size:20px; }
+      .badge { font-size:13px; } .segmented button { font-size:20px; }
+      .kpis { padding:0; gap:12px; margin-bottom:38px; }
+      .kpi-label { font-size:17px; } .kpi-number { font-size:30px; } .kpi-detail { font-size:14px; }
+      h2 { font-size:23px; margin-bottom:20px; }
+      .chart-shell { padding:14px 8px 10px; border-radius:18px; }
+      .legend { font-size:14px; gap:18px; } .swatch { width:11px; height:11px; }
+      .footnote { font-size:11px; }
+    }
+    @media(max-width:520px) {
+      main { margin:8px; padding:18px 14px; border-radius:22px; }
+      h1 { font-size:28px; letter-spacing:-.8px; } .subtitle { font-size:15px; }
+      .badge { font-size:10px; padding:5px 9px; }
+      .scenario-title { font-size:17px; margin:27px 0 8px; }
+      .segmented { margin-bottom:28px; } .segmented button { font-size:16px; padding:10px 6px; }
+      .kpis { gap:8px; margin-bottom:32px; }
+      .kpi-label { font-size:12px; margin-bottom:5px; }
+      .kpi-number { font-size:24px; } .kpi-detail { font-size:10px; }
+      h2 { font-size:20px; margin-bottom:15px; }
+      .chart-shell { padding:5px 5px 12px; border-width:1px; }
+      svg { aspect-ratio:1100 / 520; }
+      .legend { margin-top:8px; font-size:11px; gap:10px; }
+      .legend span { gap:4px; } .swatch { width:9px; height:9px; }
+      .tooltip { font-size:12px; min-width:165px; padding:9px 12px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="heading">
+    <div><h1>ArrivalIQ</h1><p class="subtitle">LAX (KLAX) · February 10–16, 2027</p></div>
+    <span class="badge">Synthetic demo</span>
+  </header>
+  <section aria-labelledby="scenarioHeading">
+    <h2 class="scenario-title" id="scenarioHeading">Demand scenario</h2>
+    <div class="segmented" role="group" aria-label="Demand scenario">
+      <button type="button" data-scenario="low" aria-pressed="false">Low</button>
+      <button type="button" data-scenario="medium" class="selected" aria-pressed="true">Medium</button>
+      <button type="button" data-scenario="high" aria-pressed="false">High</button>
+    </div>
+  </section>
+  <section class="kpis" aria-label="Forecast summary">
+    <div><span class="kpi-label">Weekly arrivals</span><strong class="kpi-number" id="weekly">—</strong><span class="kpi-detail" id="baseline">Baseline: —</span></div>
+    <div><span class="kpi-label">Busiest day</span><strong class="kpi-number" id="busiest">—</strong><span class="kpi-detail" id="busiestDate">—</span></div>
+    <div><span class="kpi-label">Extra teams</span><strong class="kpi-number" id="teams">—</strong><span class="kpi-detail">At peak 2-hour window</span></div>
+  </section>
+  <section aria-labelledby="chartTitle">
+    <h2 id="chartTitle">7-day arrival forecast</h2>
+    <div class="chart-shell">
+      <div class="chart-stage">
+        <svg id="forecastChart" viewBox="0 0 1100 415" role="img" aria-label="Seven day bar chart showing baseline and Super Bowl arrival predictions"></svg>
+        <div class="tooltip" id="tooltip" aria-hidden="true"></div>
+      </div>
+      <div class="legend"><span><i class="swatch blue"></i> Ordinary week</span><span><i class="swatch purple"></i> Super Bowl week</span></div>
+    </div>
+    <p class="footnote">Forecasts represent a fictional FBO at LAX. Baseline counts and event multipliers are synthetic assumptions, not actual LAX operations.</p>
+  </section>
+</main>
+<script id="forecastDataset" type="application/json">{"metadata":{"airport":"Los Angeles International Airport (LAX / KLAX)","forecast_start":"2027-02-10","forecast_end":"2027-02-16","note":"Synthetic, fictional FBO scenario. Not real LAX arrival counts."},"baseline_weekly":169.75,"scenarios":{"low":{"weekly_arrivals":197,"peak_date":"2027-02-12","peak_day_arrivals":38,"extra_teams":1,"peak_window":{"date":"2027-02-12","label":"18:00-20:00","arrivals":8,"capacity_before":4,"capacity_after":8},"coverage_before_pct":90.9,"coverage_after_pct":100.0,"daily":[{"date":"2027-02-10","baseline":32.25,"forecast":34},{"date":"2027-02-11","baseline":28.0,"forecast":32},{"date":"2027-02-12","baseline":30.0,"forecast":38},{"date":"2027-02-13","baseline":19.5,"forecast":29},{"date":"2027-02-14","baseline":15.25,"forecast":19},{"date":"2027-02-15","baseline":21.75,"forecast":22},{"date":"2027-02-16","baseline":23.0,"forecast":23}]},"medium":{"weekly_arrivals":226,"peak_date":"2027-02-12","peak_day_arrivals":47,"extra_teams":2,"peak_window":{"date":"2027-02-12","label":"18:00-20:00","arrivals":10,"capacity_before":4,"capacity_after":12},"coverage_before_pct":85.4,"coverage_after_pct":100.0,"daily":[{"date":"2027-02-10","baseline":32.25,"forecast":35},{"date":"2027-02-11","baseline":28.0,"forecast":35},{"date":"2027-02-12","baseline":30.0,"forecast":47},{"date":"2027-02-13","baseline":19.5,"forecast":39},{"date":"2027-02-14","baseline":15.25,"forecast":24},{"date":"2027-02-15","baseline":21.75,"forecast":23},{"date":"2027-02-16","baseline":23.0,"forecast":23}]},"high":{"weekly_arrivals":254,"peak_date":"2027-02-12","peak_day_arrivals":55,"extra_teams":2,"peak_window":{"date":"2027-02-12","label":"18:00-20:00","arrivals":12,"capacity_before":4,"capacity_after":12},"coverage_before_pct":79.1,"coverage_after_pct":100.0,"daily":[{"date":"2027-02-10","baseline":32.25,"forecast":37},{"date":"2027-02-11","baseline":28.0,"forecast":39},{"date":"2027-02-12","baseline":30.0,"forecast":55},{"date":"2027-02-13","baseline":19.5,"forecast":49},{"date":"2027-02-14","baseline":15.25,"forecast":28},{"date":"2027-02-15","baseline":21.75,"forecast":23},{"date":"2027-02-16","baseline":23.0,"forecast":23}]}}}</script>
+<script>
+  'use strict';
+  const DATA=JSON.parse(document.getElementById('forecastDataset').textContent);
+  const svg=document.getElementById('forecastChart');
+  const tooltip=document.getElementById('tooltip');
+  const ns='http://www.w3.org/2000/svg';
+  const colors={blue:'#1388fd',purple:'#9349f7'};
+  const fmtMonthDay=d=>{const [y,m,day]=d.split('-');return `${Number(m)}/${Number(day)}`;};
+  function create(tag,attrs={},parent=svg){const node=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))node.setAttribute(k,String(v));parent.appendChild(node);return node;}
+  function showTooltip(event, datum, group, viewX){
+    const box=svg.getBoundingClientRect();
+    const stage=svg.parentElement.getBoundingClientRect();
+    const left=Math.max(90,Math.min(stage.width-90,(viewX/1100)*box.width));
+    const top=Math.max(70,event.clientY-stage.top-8);
+    tooltip.style.left=`${left}px`;tooltip.style.top=`${top}px`;
+    tooltip.innerHTML=`<div class="tip-heading">${fmtMonthDay(datum.date)} · ${group===0?'Ordinary week':'Super Bowl week'}</div><div class="tip-row"><span><i class="tip-dot" style="background:${colors.blue}"></i>Ordinary week</span><b>${Number(datum.baseline.toFixed(2))}</b></div><div class="tip-row"><span><i class="tip-dot" style="background:${colors.purple}"></i>Super Bowl week</span><b>${datum.forecast}</b></div>`;
+    tooltip.classList.add('visible');tooltip.setAttribute('aria-hidden','false');
+  }
+  function hideTooltip(){tooltip.classList.remove('visible');tooltip.setAttribute('aria-hidden','true');}
+  function renderChart(rows){
+    svg.replaceChildren();hideTooltip();
+    const defs=create('defs');
+    const blue=create('linearGradient',{id:'blueGradient',x1:'0%',x2:'0%',y1:'0%',y2:'100%'},defs);
+    create('stop',{offset:'0%', 'stop-color':'#087aff'},blue);create('stop',{offset:'100%', 'stop-color':'#3695ff'},blue);
+    const purple=create('linearGradient',{id:'purpleGradient',x1:'0%',x2:'0%',y1:'0%',y2:'100%'},defs);
+    create('stop',{offset:'0%', 'stop-color':'#9348f9'},purple);create('stop',{offset:'100%', 'stop-color':'#a05cf8'},purple);
+    const left=67,right=13,top=19,bottom=57,W=1100-left-right,H=415-top-bottom;
+    const max=Math.max(...rows.flatMap(r=>[r.baseline,r.forecast]));
+    const ceiling=Math.ceil(max/4)*4;
+    for(let i=0;i<=4;i++){
+      const val=ceiling*i/4, y=top+H-(val/ceiling)*H;
+      create('line',{x1:left,y1:y,x2:left+W,y2:y,class:'chart-grid'});
+      const text=create('text',{x:left-17,y:y+7,'text-anchor':'end',class:'chart-tick'});
+      text.textContent=String(Math.round(val*10)/10);
+    }
+    create('line',{x1:left,y1:top+H,x2:left+W,y2:top+H,stroke:'#ddd','stroke-width':'1.4'});
+    const group=W/rows.length,bar=Math.min(56,group*.37),gap=5;
+    rows.forEach((row,i)=>{
+      const cx=left+(i+.5)*group;
+      const blueH=row.baseline/ceiling*H, purpleH=row.forecast/ceiling*H;
+      const barInfo=[{x:cx-bar-gap/2,h:blueH,fill:'url(#blueGradient)'},{x:cx+gap/2,h:purpleH,fill:'url(#purpleGradient)'}];
+      barInfo.forEach((b,j)=>{
+        create('rect',{x:b.x,y:top+H-b.h,width:bar,height:b.h,rx:8,fill:b.fill});
+        const hit=create('rect',{x:b.x-4,y:top,width:bar+8,height:H,class:'chart-hit','tabindex':'0','role':'img','aria-label':`${fmtMonthDay(row.date)} ${j?'Super Bowl week':'Ordinary week'}: ${j?row.forecast:row.baseline} aircraft`});
+        hit.addEventListener('pointerenter',e=>showTooltip(e,row,j,cx));
+        hit.addEventListener('pointermove',e=>showTooltip(e,row,j,cx));
+        hit.addEventListener('pointerleave',hideTooltip);
+        hit.addEventListener('focus',()=>showTooltip({clientY:top+H*.5+(svg.getBoundingClientRect().top)},row,j,cx));
+        hit.addEventListener('blur',hideTooltip);
+      });
+      const label=create('text',{x:cx,y:top+H+40,'text-anchor':'middle',class:'chart-date'});
+      label.textContent=fmtMonthDay(row.date);
+    });
+  }
+  function render(key){
+    const data=DATA.scenarios[key];
+    document.getElementById('weekly').textContent=data.weekly_arrivals;
+    document.getElementById('baseline').textContent=`Baseline: ${Number(DATA.baseline_weekly.toFixed(2)).toLocaleString('en-US')}`;
+    document.getElementById('busiest').textContent=data.peak_day_arrivals;
+    document.getElementById('busiestDate').textContent=`${fmtMonthDay(data.peak_date)} · aircraft`;
+    document.getElementById('teams').textContent=`+${data.extra_teams}`;
+    document.querySelectorAll('[data-scenario]').forEach(button=>{const selected=button.dataset.scenario===key;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
+    renderChart(data.daily);
+  }
+  document.querySelectorAll('[data-scenario]').forEach(button=>button.addEventListener('click',()=>render(button.dataset.scenario)));
+  render('medium');
+</script>
+</body>
+</html>
