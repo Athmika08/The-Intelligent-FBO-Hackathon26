@@ -113,3 +113,68 @@ async function initialize(){
 }
 
 initialize();
+
+
+// Highlight the section currently beneath the sticky navigation.
+function initializeSectionNavigation() {
+  const header = document.querySelector('.site-header');
+  const links = [...document.querySelectorAll('.main-nav .nav-link')];
+  const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  if (!header || !sections.length) return;
+
+  function activate(sectionId) {
+    links.forEach(link => {
+      const active = link.getAttribute('href') === `#${sectionId}`;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  let pendingFrame = false;
+  let clickedSection = null;
+  let clickedUntil = 0;
+
+  function updateActiveSection() {
+    pendingFrame = false;
+    const topMarker = header.getBoundingClientRect().bottom + 48;
+    let sectionId = sections[0].id;
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= topMarker) {
+        sectionId = section.id;
+      }
+    }
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) {
+      sectionId = sections[sections.length - 1].id;
+    }
+    if (clickedSection) {
+      const destination = document.getElementById(clickedSection);
+      const targetTop = header.getBoundingClientRect().bottom + 20;
+      if (Math.abs(destination.getBoundingClientRect().top - targetTop) <= 24 || Date.now() >= clickedUntil) {
+        clickedSection = null;
+      } else {
+        sectionId = clickedSection;
+      }
+    }
+    activate(sectionId);
+  }
+
+  function requestSectionUpdate() {
+    if (pendingFrame) return;
+    pendingFrame = true;
+    window.requestAnimationFrame(updateActiveSection);
+  }
+
+  links.forEach(link => link.addEventListener('click', () => {
+    clickedSection = link.hash.slice(1);
+    clickedUntil = Date.now() + 1800;
+    activate(clickedSection);
+  }));
+
+  window.addEventListener('scroll', requestSectionUpdate, { passive: true });
+  window.addEventListener('resize', requestSectionUpdate);
+  window.addEventListener('hashchange', requestSectionUpdate);
+  requestSectionUpdate();
+}
+
+initializeSectionNavigation();
